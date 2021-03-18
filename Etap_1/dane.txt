@@ -1,0 +1,15 @@
+Zespół:
+- Marcin Kroczak. Adres email: marcink1303@gmail.com. Grupa 1ID21B
+Temat: Konwersja między formatami (Temat nr. 43). Narzędzie do konwersji między formatami HTML i MD (Markdown).
+Użyte technologie: Język Java, TypeScript, framework Angular, Spring Boot. IDE - inteliji idea.  
+harmonogram: 
+- zapoznanie się ze szczegółami składni języka MD i HTML. (około dwóch tygodni)
+- przygotowanie szkieletu aplikacji webowej (architektura klient-serwer). Stworzenie po stronie logiki kontrolera i serwisów związanych 
+z obsługą zapytań, szczególnie z odbiorem pliku od klienta. Utworzenie interfejsu użytkownika na którym wgrywany będzie plik HTML lub MD. (około trzech tygodni)
+- implementacja logiki związanej z konwersją pomiędzy formatami. Przekazanie klientowi do pobrania skonwertowanego pliku. Prezentacja wyników w warstwie prezentacji
+i informacje o ewentualnych błędach powstałych między innymi przez błędy w składni, lub w transferze plików. (około 4 tygodni)
+- testowanie systemu (około tygodnia)
+Tematy projektów na innych przedmiotach:
+Programowanie systemów rozproszonych - gra Memory
+Praca inżynierska - projekt i implementacja systemu zarządzania antykryzysowego
+praca magisterska - temat nieznany.
