@@ -13,3 +13,5 @@ Tematy projektów na innych przedmiotach:
 Programowanie systemów rozproszonych - gra Memory
 Praca inżynierska - projekt i implementacja systemu zarządzania antykryzysowego
 praca magisterska - temat nieznany.
+//
+teretyczny wstęp, istniejące rozwiązania, rozszerzyć o więcej formatów
