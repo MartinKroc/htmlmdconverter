@@ -1,0 +1,23 @@
+<div class="container top">
+  <app-upload-file></app-upload-file>
+</div>
+<div class="container files">
+  <mat-card>
+    <mat-selection-list #shoes [multiple]="false">
+      <h2>Załadowane pliki</h2>
+      <mat-list-option *ngFor="let file of fileInfos | async" value="file.name">
+        {{file.name}}
+      </mat-list-option>
+      <hr>
+      <mat-form-field appearance="fill">
+        <mat-label>Wybierz format</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let format of formats" [value]="format.value">
+            {{format.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field><br>
+      <button mat-raised-button color="accent" (click)="openSnackBar('Skonwertowano plik', 'pobierz')">Konwertuj</button>
+    </mat-selection-list>
+  </mat-card>
+</div>

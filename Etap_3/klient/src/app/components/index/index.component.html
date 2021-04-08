@@ -1,0 +1,15 @@
+<div class="container">
+  <h1>Konwerter MD/HTML online</h1>
+</div>
+<div class="container">
+  <app-upload-file></app-upload-file>
+</div>
+<div class="container">
+  <mat-selection-list #shoes [multiple]="false">
+    <h2>Załadowane pomyślnie pliki</h2>
+      <mat-list-option *ngFor="let file of fileInfos | async" value="file.name">
+        {{file.name}}
+      </mat-list-option>
+    <button mat-raised-button color="accent">Konwertuj</button>
+  </mat-selection-list>
+</div>

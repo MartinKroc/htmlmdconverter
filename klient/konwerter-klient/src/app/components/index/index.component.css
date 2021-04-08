@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
+.top {
+  margin: 0;
+  padding: 50px;
+  background-color: gainsboro;
+}
+ .files {
+   padding: 10px;
+ }
