@@ -28,7 +28,7 @@ export class UploadFileComponent implements OnInit {
     if (this.selectedFiles) {
       const file: File | null = this.selectedFiles.item(0);
 
-      if (file) {
+      if (file.size < 10000000 && (file.type === 'text/html' || file.type === 'text/md')) {
         this.currentFile = file;
 
         this.apiService.uploadFile(this.currentFile).subscribe(
@@ -47,14 +47,18 @@ export class UploadFileComponent implements OnInit {
             if (err.error && err.error.message) {
               this.message = err.error.message;
             } else {
-              this.message = 'Could not upload the file!';
+              this.message = 'Przesłano plik!';
             }
 
             this.currentFile = undefined;
           });
       }
-
-      this.selectedFiles = undefined;
+      else {
+        if (file.size >= 10000000) { this.message = 'Plik jest za duży (przekracza 10 MB)'; }
+        if (file.type !== 'text/html' || 'text/md') { this.message = 'Plik jest w złym formacie (akceptowane rozszerzenia: .html i .md'; }
+        this.selectedFiles = undefined;
+        }
+      }
     }
   }
-}
+
