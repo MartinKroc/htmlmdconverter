@@ -14,12 +14,14 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatCardModule} from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { ReceivedFileComponent } from './components/received-file/received-file.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UploadFileComponent,
-    IndexComponent
+    IndexComponent,
+    ReceivedFileComponent
   ],
   imports: [
     BrowserModule,

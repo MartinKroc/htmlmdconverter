@@ -1,12 +1,18 @@
 package com.converter.serwer.services;
 
 import com.converter.serwer.dtos.AddFileDto;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Console;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -17,7 +23,7 @@ import java.util.stream.Stream;
 @Service
 public class ConverterServiceImpl implements ConverterService {
 
-    private final Path root = Paths.get("uploads");
+    private final Path root = Paths.get("uploaddir");
 
     @Override
     public void fileInit() {
@@ -64,5 +70,20 @@ public class ConverterServiceImpl implements ConverterService {
         } catch (IOException e) {
             throw new RuntimeException("Could not load the files!");
         }
+    }
+
+    @Override
+    public File convertHtmlToMd() {
+        Document doc = null;
+        File input = null;
+        try {
+            input = new File("uploaddir/test.html");
+            doc = Jsoup.parse(input, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Element allH1 = doc.body();
+        //System.out.println(allH1);
+        return input;
     }
 }

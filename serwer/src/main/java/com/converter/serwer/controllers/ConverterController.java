@@ -4,8 +4,10 @@ import com.converter.serwer.dtos.AddFileDto;
 import com.converter.serwer.dtos.FileInfo;
 import com.converter.serwer.services.ConverterService;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,8 +15,12 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import org.springframework.core.io.Resource;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.io.IOUtils;
 
 @RestController
 @CrossOrigin
@@ -23,11 +29,6 @@ import java.util.stream.Collectors;
 public class ConverterController {
 
     private final ConverterService converterService;
-
-    @GetMapping
-    public String test() {
-        return "test okej";
-    }
 
     @PostMapping("/upload")
     public String addFile(@RequestParam("file")MultipartFile file) {
@@ -61,4 +62,28 @@ public class ConverterController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
+
+/*    @GetMapping("/conv")
+    public File convertHtmlMd() {
+        return this.converterService.convertHtmlToMd();
+    }*/
+/*    @GetMapping(value = "/conv")
+    public ResponseEntity<Resource> convertHtmlMd() throws IOException {
+        File file = new File("uploaddir/test.html");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }*/
+    @GetMapping(value = "/conv")
+    public ResponseEntity<InputStreamResource> convertHtmlMd() throws IOException {
+        File file = new File("uploaddir/test.html");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("text/html"))
+                .body(resource);
+    }
+
 }

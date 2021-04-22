@@ -2,6 +2,7 @@ package com.converter.serwer.services;
 
 import com.converter.serwer.dtos.AddFileDto;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,4 +15,5 @@ public interface ConverterService {
     public Resource loadFile(String fileName);
     public void deleteFile();
     public Stream<Path> loadAll();
+    public File convertHtmlToMd();
 }
