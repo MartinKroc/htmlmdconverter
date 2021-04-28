@@ -42,7 +42,7 @@ export class IndexComponent implements OnInit, DoCheck {
         const downloadURL = window.URL.createObjectURL(res);
         const link = document.createElement('a');
         link.href = downloadURL;
-        link.download = 'test.html';
+        link.download = 'converted.html';
         link.click();
       },
       error => {

@@ -28,9 +28,9 @@ export class UploadFileComponent implements OnInit {
     if (this.selectedFiles) {
       const file: File | null = this.selectedFiles.item(0);
 
-      if (file.size < 10000000 && (file.type === 'text/html' || file.type === 'text/md')) {
+      if (file.size < 10000000) {
         this.currentFile = file;
-
+        console.log(this.currentFile.type);
         this.apiService.uploadFile(this.currentFile).subscribe(
           (event: any) => {
             if (event.type === HttpEventType.UploadProgress) {

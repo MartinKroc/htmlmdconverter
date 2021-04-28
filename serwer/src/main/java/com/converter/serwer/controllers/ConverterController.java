@@ -63,19 +63,6 @@ public class ConverterController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
-/*    @GetMapping("/conv")
-    public File convertHtmlMd() {
-        return this.converterService.convertHtmlToMd();
-    }*/
-/*    @GetMapping(value = "/conv")
-    public ResponseEntity<Resource> convertHtmlMd() throws IOException {
-        File file = new File("uploaddir/test.html");
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-        return ResponseEntity.ok()
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
-    }*/
     @GetMapping(value = "/conv")
     public ResponseEntity<InputStreamResource> convertHtmlMd() throws IOException {
         File file = new File("uploaddir/test.html");
@@ -86,4 +73,13 @@ public class ConverterController {
                 .body(resource);
     }
 
+    @GetMapping(value = "/convmd")
+    public ResponseEntity<InputStreamResource> convertMdToHtml() throws IOException {
+        return converterService.convertMdToHtml();
+    }
+
+    @GetMapping(value = "/test")
+    public File convert() {
+       return converterService.convertHtmlToMd();
+    }
 }

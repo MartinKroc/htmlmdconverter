@@ -24,10 +24,8 @@ export class ApiServiceService {
   getFiles(): Observable<any> {
     return this.http.get(`${this.baseUrl}/convert/files`);
   }
-/*  getWaterStations(): Observable<WaterStation[]> {
-    return this.http.get<WaterStation[]>(this.WATER_STATION_URL);
-  }*/
+
   convertHTMLToMD(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/convert/conv`, {responseType: 'blob' as 'json'});
+    return this.http.get(`${this.baseUrl}/convert/convmd`, {responseType: 'blob' as 'json'});
   }
 }
