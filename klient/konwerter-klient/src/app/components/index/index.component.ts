@@ -14,12 +14,19 @@ export class IndexComponent implements OnInit, DoCheck {
   constructor(private apiService: ApiServiceService, private snackBar: MatSnackBar) { }
   formats: Format[] = [
     {value: 'html-0', viewValue: 'HTML'},
-    {value: 'md-1', viewValue: 'MD'}
+    {value: 'md-1', viewValue: 'MD'},
+    {value: 'xml-2', viewValue: 'XML'},
   ];
   fileInfos?: Observable<any>;
   convertButton = false;
   convertedFile: any;
   file: any;
+  selectedFormat: string;
+  r = 'Otrzymany plik';
+  u = 'Wgrany plik';
+  receivedFile;
+  isReceiving = true;
+  isGetting = false;
 
   ngOnInit(): void {
     this.fileInfos = this.apiService.getFiles();
@@ -32,23 +39,64 @@ export class IndexComponent implements OnInit, DoCheck {
   convert() {
     this.convertButton = true;
   }
-  public convertToMd(): void {
-    this.apiService.convertHTMLToMD().subscribe(
-      res => {
-/*        this.convertedFile = res;
-        console.log(res);*/
-        this.blob = new Blob([res], {type: 'application/pdf'});
+  public convertFile(): void {
+    if (this.selectedFormat === 'html-0') {
+      this.apiService.convertMDToHTML().subscribe(
+        res => {
+          // console.log(res);
+          this.blob = new Blob([res], {type: 'application/pdf'});
 
-        const downloadURL = window.URL.createObjectURL(res);
-        const link = document.createElement('a');
-        link.href = downloadURL;
-        link.download = 'converted.html';
-        link.click();
-      },
-      error => {
-        alert('error - get converted file');
-      }
-    );
+          const downloadURL = window.URL.createObjectURL(res);
+          const link = document.createElement('a');
+          link.href = downloadURL;
+          link.download = 'converted.html';
+          link.click();
+          // get data from blob
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.receivedFile = reader.result;
+          };
+          reader.readAsText(this.blob);
+        },
+        error => {
+          alert('error - get converted file');
+        }
+      );
+    }
+    else if (this.selectedFormat === 'md-1') {
+      this.apiService.convertHTMLToMD().subscribe(
+        res => {
+          console.log(res);
+          this.blob = new Blob([res], {type: 'application/pdf'});
+
+          const downloadURL = window.URL.createObjectURL(res);
+          const link = document.createElement('a');
+          link.href = downloadURL;
+          link.download = 'converted.md';
+          link.click();
+        },
+        error => {
+          alert('error - get converted file');
+        }
+      );
+    }
+    else if (this.selectedFormat === 'xml-2') {
+      this.apiService.convertMDToXML().subscribe(
+        res => {
+          console.log(res);
+          this.blob = new Blob([res], {type: 'application/pdf'});
+
+          const downloadURL = window.URL.createObjectURL(res);
+          const link = document.createElement('a');
+          link.href = downloadURL;
+          link.download = 'converted.xml';
+          link.click();
+        },
+        error => {
+          alert('error - get converted file');
+        }
+      );
+    }
   }
 
   openSnackBar(message: string, action: string) {

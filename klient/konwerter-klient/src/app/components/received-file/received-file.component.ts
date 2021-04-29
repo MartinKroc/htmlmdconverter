@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-received-file',
@@ -7,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReceivedFileComponent implements OnInit {
 
+  @Input() htitle: string;
+  @Input() resT: string;
+  @Input() iR: boolean;
   constructor() { }
 
   ngOnInit(): void {

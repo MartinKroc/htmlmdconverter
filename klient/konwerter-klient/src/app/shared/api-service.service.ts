@@ -26,6 +26,13 @@ export class ApiServiceService {
   }
 
   convertHTMLToMD(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/convert/convmd`, {responseType: 'blob' as 'json'});
+    return this.http.get(`${this.baseUrl}/convert/conv/html`, {responseType: 'blob' as 'json'});
+  }
+
+  convertMDToHTML(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/convert/conv/md`, {responseType: 'blob' as 'json'});
+  }
+  convertMDToXML(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/convert/conv/xml`, {responseType: 'blob' as 'json'});
   }
 }

@@ -11,14 +11,18 @@
       <hr>
       <mat-form-field appearance="fill">
         <mat-label>Wybierz format</mat-label>
-        <mat-select>
+        <mat-select [(value)]="selectedFormat">
           <mat-option *ngFor="let format of formats" [value]="format.value">
             {{format.viewValue}}
           </mat-option>
         </mat-select>
       </mat-form-field><br>
       <!--<button mat-raised-button color="accent" (click)="openSnackBar('Skonwertowano plik', 'pobierz')">Konwertuj</button>-->
-      <button mat-raised-button color="accent" (click)="convertToMd()">Konwertuj</button>
+      <button mat-raised-button color="accent" (click)="convertFile()">Konwertuj</button>
     </mat-selection-list>
   </mat-card>
+</div>
+<div class="container">
+<!--  <app-received-file class="results" [htitle]='u' [resT]="receivedFile" [iR]="isGetting"></app-received-file>-->
+  <app-received-file class="results" [htitle]="r" [resT]="receivedFile" [iR]="isReceiving"></app-received-file>
 </div>

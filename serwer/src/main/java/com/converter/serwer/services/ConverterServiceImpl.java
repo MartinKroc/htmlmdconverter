@@ -82,17 +82,58 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
     @Override
-    public File convertHtmlToMd() {
-/*        Document doc = null;
-        File input = null;
-        try {
-            input = new File("uploaddir/test.html");
-            doc = Jsoup.parse(input, "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+    public ResponseEntity<InputStreamResource> convertHtmlToMd() throws IOException {
 
-        return null;
+        Document doc = null;
+        //delete old files
+        try {
+            File file = new File("uploaddir/test.html");
+            doc = Jsoup.parse(file, "UTF-8");
+            File fileUp = new File("src/main/resources/convertedfiles/result.md");
+
+            if(fileUp.delete())
+            {
+                System.out.println("File deleted successfully");
+            }
+            else
+            {
+                System.out.println("Failed to delete the file");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        //parse
+        System.out.print(doc);
+        //create new result file
+        FileWriter fileWriter = null;
+        InputStreamResource resource = null;
+        FileInputStream fis = null;
+        File myObj = null;
+        try {
+            myObj = new File("src/main/resources/convertedfiles/result.md");
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+            fileWriter = new FileWriter(myObj);
+            fileWriter.append(doc.toString());
+            fis = new FileInputStream(myObj);
+            resource = new InputStreamResource(fis);
+
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        } finally {
+            if (fileWriter != null) {
+                fileWriter.close();
+            }
+        }
+
+        return ResponseEntity.ok()
+                .contentLength(myObj.length())
+                .contentType(MediaType.parseMediaType("text/html"))
+                .body(resource);
     }
 
     @Override
@@ -106,24 +147,31 @@ public class ConverterServiceImpl implements ConverterService {
         List<Node> nodes = rootNode.getChildren();
         StringBuilder content = new StringBuilder();
 
+        String temp1;
+        String temp2;
         for (Node node : nodes) {
+            System.out.print(node);
             if (node instanceof HeaderNode) {
                 HeaderNode headerNode = (HeaderNode) node;
-                content.append("<h2>");
+                temp1 = "<h" + headerNode.getLevel() + ">";
+                temp2 = "</h" + headerNode.getLevel() + ">";
+                content.append(temp1);
                 String text = getTextContent(node);
                 if (text!=null) {
                     content.append(text);
                 }
-                content.append("</h2>");
+                content.append(temp2);
                 content.append("\n\n");
-            } else if (node instanceof ParaNode) {
+            }
+            else if (node instanceof ParaNode) {
                 ParaNode paraNode = (ParaNode) node;
                 String text = getTextContent(node);
                 if (text!=null) {
                     content.append(text);
                 }
                 content.append("\n\n");
-            } else if (node instanceof VerbatimNode) {
+            }
+            else if (node instanceof VerbatimNode) {
                 VerbatimNode verbatimNode = (VerbatimNode) node;
                 content.append("<code>");
                 String text = getTextContent(node);
@@ -132,7 +180,39 @@ public class ConverterServiceImpl implements ConverterService {
                 }
                 content.append("</code>");
                 content.append("\n\n");
-            } else if (node instanceof BulletListNode) {
+            }
+            else if (node instanceof BlockQuoteNode) {
+                BlockQuoteNode blockQuoteNode = (BlockQuoteNode) node;
+                content.append("<blockquote>");
+                String text = getTextContent(node);
+                if (text!=null) {
+                    content.append(text);
+                }
+                content.append("</blockquote>");
+                content.append("\n\n");
+            }
+            else if (node instanceof StrikeNode) {
+                StrongEmphSuperNode strongEmphSuperNode = (StrongEmphSuperNode) node;
+                StrikeNode strikeNode = (StrikeNode) node;
+                if(strongEmphSuperNode.isStrong()) {
+                    content.append("<strong>");
+                    String text = getTextContent(node);
+                    if (text!=null) {
+                        content.append(text);
+                    }
+                    content.append("</strong>");
+                }
+                else {
+                    content.append("<em>");
+                    String text = getTextContent(node);
+                    if (text!=null) {
+                        content.append(text);
+                    }
+                    content.append("</em>");
+                }
+                content.append("\n\n");
+            }
+            else if (node instanceof BulletListNode) {
                 BulletListNode bulletListNode = (BulletListNode) node;
                 content.append("<ul>");
                 List<Node> listItemNodes = bulletListNode.getChildren();
@@ -149,6 +229,25 @@ public class ConverterServiceImpl implements ConverterService {
                 }
                 content.append("</ul>");
             }
+            else if (node instanceof OrderedListNode) {
+                OrderedListNode orderedListNode = (OrderedListNode) node;
+                content.append("<ol>");
+                List<Node> listItemOlNodes = orderedListNode.getChildren();
+                for (Node childNode : listItemOlNodes) {
+                    if (childNode instanceof ListItemNode) {
+                        ListItemNode listItemNode = (ListItemNode) childNode;
+                        content.append("<li>");
+                        String text = getTextContent(childNode);
+                        if (text!=null) {
+                            content.append(text);
+                        }
+                        content.append("</li>");
+                    }
+                }
+                content.append("</ol>");
+            }
+
+
         }
         System.out.print(content);
         //delete file if exist
@@ -205,27 +304,70 @@ public class ConverterServiceImpl implements ConverterService {
                 .contentType(MediaType.parseMediaType("text/html"))
                 .body(resource);
     }
+
+    @Override
+    public ResponseEntity<InputStreamResource> convertMDToXml() {
+        return null;
+    }
+
     private String getTextContent(Node node) {
         if (node instanceof TextNode) {
             return getTextContent((TextNode)node);
-        } else if (node instanceof HeaderNode) {
+        }
+        else if (node instanceof HeaderNode) {
             HeaderNode headerNode = (HeaderNode) node;
             return getTextContent((TextNode) headerNode.getChildren().get(0));
-        } else if (node instanceof ParaNode) {
-            ParaNode paraNode = (ParaNode) node;
-            Node firstChildNode = paraNode.getChildren().get(0);
+        }
+        else if (node instanceof BlockQuoteNode) {
+            BlockQuoteNode blockQuoteNode = (BlockQuoteNode) node;
+            return getTextContent((SuperNode) blockQuoteNode.getChildren().get(0));
+        }
+        else if (node instanceof StrongEmphSuperNode) {
+            StrongEmphSuperNode strongEmphSuperNode = (StrongEmphSuperNode) node;
+            Node firstChildNode = strongEmphSuperNode.getChildren().get(0);
             if (firstChildNode instanceof SuperNode) {
                 return getTextContent((SuperNode) firstChildNode);
-            } else if (firstChildNode instanceof TextNode) {
+            }
+            else if (firstChildNode instanceof TextNode) {
                 return getTextContent((TextNode) firstChildNode);
             }
-        } else if (node instanceof ListItemNode) {
+        }
+        else if (node instanceof ParaNode) {
+            ParaNode paraNode = (ParaNode) node;
+            Node firstChildNode = paraNode.getChildren().get(0);
+            System.out.println("first child node " + firstChildNode);
+            if (firstChildNode instanceof SuperNode) {
+                Node sChild = firstChildNode.getChildren().get(0);
+                System.out.println("sChild node " + sChild);
+                String li = "link";
+                if(sChild instanceof ExpLinkNode) {
+                    ExpLinkNode eln = (ExpLinkNode) firstChildNode.getChildren().get(0);
+                    System.out.println(eln.url);
+                    String appendL = li + "<a " + "href=\"" + eln.url + "\">" + li + "</a>" + eln.title;
+                    return appendL;
+                }
+                else if(sChild instanceof ExpImageNode) {
+                    ExpImageNode ein = (ExpImageNode)firstChildNode.getChildren().get(0);
+                    System.out.println("zdjecie" + ein.getChildren().get(0));
+                    String appendImg = "<img " + "src=\"" + ein.url + "\">" + "</img>";
+                    return appendImg;
+                }
+                else {
+                    return getTextContent((SuperNode) firstChildNode);
+                }
+            }
+            else if (firstChildNode instanceof TextNode) {
+                return getTextContent((TextNode) firstChildNode);
+            }
+        }
+        else if (node instanceof ListItemNode) {
             ListItemNode listItemNode = (ListItemNode) node;
             RootNode rootNode = (RootNode) listItemNode.getChildren().get(0);
             Node firstChildNode = rootNode.getChildren().get(0);
             if (firstChildNode instanceof SuperNode) {
                 return getTextContent((SuperNode) firstChildNode);
-            } else if (firstChildNode instanceof TextNode) {
+            }
+            else if (firstChildNode instanceof TextNode) {
                 return getTextContent((TextNode) firstChildNode);
             }
         }
@@ -236,16 +378,59 @@ public class ConverterServiceImpl implements ConverterService {
         List<Node> nodes = node.getChildren();
         StringBuilder content = new StringBuilder();
         for (Node child : nodes) {
-            if (child instanceof TextNode) {
-                content.append(getTextContent((TextNode)child));
-            } else if (child instanceof SpecialTextNode) {
+            if (child instanceof VerbatimNode) {
+                content.append(getTextContent((VerbatimNode)child));
+            }
+            else if (child instanceof SpecialTextNode) {
                 content.append(getTextContent((SpecialTextNode)child));
+            }
+            else if (child instanceof InlineHtmlNode) {
+                content.append(getTextContent((InlineHtmlNode)child));
+            }
+            else if (child instanceof HtmlBlockNode) {
+                content.append(getTextContent((HtmlBlockNode) child));
+            }
+            else if (child instanceof CodeNode) {
+                content.append(getTextContent((CodeNode)child));
+            }
+            else if (child instanceof TextNode) {
+                content.append(getTextContent((TextNode)child));
+            }
+            else if (child instanceof SuperNode) {
+                if(child instanceof StrongEmphSuperNode) {
+                    StrongEmphSuperNode sn = (StrongEmphSuperNode)child;
+                    if(sn.isStrong()) {
+                        content.append("<strong>");
+                        content.append(getTextContent((TextNode)child.getChildren().get(0)));
+                        content.append("</strong>");
+                    }
+                    else {
+                        content.append("<em>");
+                        content.append(getTextContent((TextNode)child.getChildren().get(0)));
+                        content.append("</em>");
+                    }
+                }
+                else {
+                    content.append(getTextContent((TextNode)child.getChildren().get(0)));
+                }
             }
         }
         return content.toString();
     }
 
     private String getTextContent(TextNode node) {
+        return node.getText();
+    }
+    private String getTextContent(SpecialTextNode node) {
+        return node.getText();
+    }
+    private String getTextContent(InlineHtmlNode node) {
+        return node.getText();
+    }
+    private String getTextContent(HtmlBlockNode node) {
+        return node.getText();
+    }
+    private String getTextContent(CodeNode node) {
         return node.getText();
     }
 }

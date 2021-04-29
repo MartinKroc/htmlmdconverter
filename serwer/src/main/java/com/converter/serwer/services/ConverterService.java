@@ -17,7 +17,9 @@ public interface ConverterService {
     public Resource loadFile(String fileName);
     public void deleteFile();
     public Stream<Path> loadAll();
-    public File convertHtmlToMd();
+    public ResponseEntity<InputStreamResource> convertHtmlToMd() throws IOException;
 
     ResponseEntity<InputStreamResource> convertMdToHtml() throws IOException;
+
+    ResponseEntity<InputStreamResource> convertMDToXml();
 }

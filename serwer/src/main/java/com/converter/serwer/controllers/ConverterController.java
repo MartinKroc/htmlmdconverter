@@ -73,13 +73,18 @@ public class ConverterController {
                 .body(resource);
     }
 
-    @GetMapping(value = "/convmd")
+    @GetMapping(value = "/conv/md")
     public ResponseEntity<InputStreamResource> convertMdToHtml() throws IOException {
         return converterService.convertMdToHtml();
     }
 
-    @GetMapping(value = "/test")
-    public File convert() {
-       return converterService.convertHtmlToMd();
+    @GetMapping(value = "/conv/html")
+    public ResponseEntity<InputStreamResource> convert() throws IOException {
+        return converterService.convertHtmlToMd();
+    }
+
+    @GetMapping(value = "/conv/xml")
+    public ResponseEntity<InputStreamResource> convertMdTOXml() throws IOException {
+        return converterService.convertMDToXml();
     }
 }

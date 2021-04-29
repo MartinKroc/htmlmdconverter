@@ -14,6 +14,9 @@ export class UploadFileComponent implements OnInit {
   progress = 0;
   message = '';
   fileInfos?: Observable<any>;
+  u = 'Wgrany plik';
+  receivedFile;
+  isGetting = false;
   constructor(private apiService: ApiServiceService) { }
 
   ngOnInit(): void {
