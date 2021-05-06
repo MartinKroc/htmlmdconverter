@@ -16,6 +16,7 @@ export class IndexComponent implements OnInit, DoCheck {
     {value: 'html-0', viewValue: 'HTML'},
     {value: 'md-1', viewValue: 'MD'},
     {value: 'xml-2', viewValue: 'XML'},
+    {value: 'sql-3', viewValue: 'SQL'}
   ];
   fileInfos?: Observable<any>;
   convertButton = false;
@@ -41,6 +42,7 @@ export class IndexComponent implements OnInit, DoCheck {
   }
   public convertFile(): void {
     if (this.selectedFormat === 'html-0') {
+      console.log('meee');
       this.apiService.convertMDToHTML().subscribe(
         res => {
           // console.log(res);
@@ -74,6 +76,29 @@ export class IndexComponent implements OnInit, DoCheck {
           link.href = downloadURL;
           link.download = 'converted.md';
           link.click();
+        },
+        error => {
+          alert('error - get converted file');
+        }
+      );
+    }
+    else if (this.selectedFormat === 'sql-3') {
+      this.apiService.convertHTMLToSQL().subscribe(
+        res => {
+          console.log(res);
+          this.blob = new Blob([res], {type: 'application/pdf'});
+
+          const downloadURL = window.URL.createObjectURL(res);
+          const link = document.createElement('a');
+          link.href = downloadURL;
+          link.download = 'converted.sql';
+          link.click();
+          // get data from blob
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.receivedFile = reader.result;
+          };
+          reader.readAsText(this.blob);
         },
         error => {
           alert('error - get converted file');

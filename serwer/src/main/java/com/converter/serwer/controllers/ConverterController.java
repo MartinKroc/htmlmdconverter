@@ -3,6 +3,7 @@ package com.converter.serwer.controllers;
 import com.converter.serwer.dtos.AddFileDto;
 import com.converter.serwer.dtos.FileInfo;
 import com.converter.serwer.services.ConverterService;
+import com.converter.serwer.services.HtmlSqlService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +30,7 @@ import org.apache.commons.io.IOUtils;
 public class ConverterController {
 
     private final ConverterService converterService;
+    private final HtmlSqlService htmlSqlService;
 
     @PostMapping("/upload")
     public String addFile(@RequestParam("file")MultipartFile file) {
@@ -86,5 +88,10 @@ public class ConverterController {
     @GetMapping(value = "/conv/xml")
     public ResponseEntity<InputStreamResource> convertMdTOXml() throws IOException {
         return converterService.convertMDToXml();
+    }
+
+    @GetMapping(value = "/conv/sql")
+    public ResponseEntity<InputStreamResource> convertHtmlToSql() throws IOException {
+        return htmlSqlService.convert();
     }
 }
