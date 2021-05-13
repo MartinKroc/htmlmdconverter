@@ -33,12 +33,11 @@ export class ApiServiceService {
     return this.http.get(`${this.baseUrl}/convert/conv/md`, {responseType: 'blob' as 'json'});
   }
 
-  convertMDToXML(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/convert/conv/xml`, {responseType: 'blob' as 'json'});
+  convertHTMLToSQL(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/convert/conv/sql`, {responseType: 'blob' as 'json'});
   }
 
-  convertHTMLToSQL(): Observable<any> {
-    console.log('mmee');
-    return this.http.get(`${this.baseUrl}/convert/conv/sql`, {responseType: 'blob' as 'json'});
+  convertHTMLToCSV(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/convert/conv/csv`, {responseType: 'blob' as 'json'});
   }
 }

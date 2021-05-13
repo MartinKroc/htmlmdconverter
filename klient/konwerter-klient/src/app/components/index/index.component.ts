@@ -15,8 +15,8 @@ export class IndexComponent implements OnInit, DoCheck {
   formats: Format[] = [
     {value: 'html-0', viewValue: 'HTML'},
     {value: 'md-1', viewValue: 'MD'},
-    {value: 'xml-2', viewValue: 'XML'},
-    {value: 'sql-3', viewValue: 'SQL'}
+    {value: 'sql-3', viewValue: 'SQL'},
+    {value: 'csv-4', viewValue: 'CSV'}
   ];
   fileInfos?: Observable<any>;
   convertButton = false;
@@ -105,8 +105,8 @@ export class IndexComponent implements OnInit, DoCheck {
         }
       );
     }
-    else if (this.selectedFormat === 'xml-2') {
-      this.apiService.convertMDToXML().subscribe(
+    else if (this.selectedFormat === 'csv-4') {
+      this.apiService.convertHTMLToCSV().subscribe(
         res => {
           console.log(res);
           this.blob = new Blob([res], {type: 'application/pdf'});
@@ -114,8 +114,14 @@ export class IndexComponent implements OnInit, DoCheck {
           const downloadURL = window.URL.createObjectURL(res);
           const link = document.createElement('a');
           link.href = downloadURL;
-          link.download = 'converted.xml';
+          link.download = 'converted.csv';
           link.click();
+          // get data from blob
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.receivedFile = reader.result;
+          };
+          reader.readAsText(this.blob);
         },
         error => {
           alert('error - get converted file');
