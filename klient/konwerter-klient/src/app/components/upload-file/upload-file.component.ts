@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
 import {ApiServiceService} from '../../shared/api-service.service';
+import { Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-upload-file',
@@ -17,6 +18,7 @@ export class UploadFileComponent implements OnInit {
   u = 'Wgrany plik';
   receivedFile;
   isGetting = false;
+  @Output() newItemEvent = new EventEmitter<string>();
   constructor(private apiService: ApiServiceService) { }
 
   ngOnInit(): void {
@@ -33,7 +35,8 @@ export class UploadFileComponent implements OnInit {
 
       if (file.size < 10000000) {
         this.currentFile = file;
-        console.log(this.currentFile.type);
+        //console.log(this.currentFile.type);
+        this.newItemEvent.emit(this.currentFile.type);
         this.apiService.uploadFile(this.currentFile).subscribe(
           (event: any) => {
             if (event.type === HttpEventType.UploadProgress) {

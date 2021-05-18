@@ -1,5 +1,5 @@
 <div class="container top">
-  <app-upload-file></app-upload-file>
+  <app-upload-file (newItemEvent)="setFileFormat($event)"></app-upload-file>
 </div>
 <div class="container files">
   <mat-card>
@@ -20,6 +20,9 @@
       <!--<button mat-raised-button color="accent" (click)="openSnackBar('Skonwertowano plik', 'pobierz')">Konwertuj</button>-->
       <button mat-raised-button color="accent" (click)="convertFile()">Konwertuj</button>
     </mat-selection-list>
+    <div *ngIf="errorMessage">
+      <p>Konwersja na wybrany format jest niedostępna.</p>
+    </div>
   </mat-card>
 </div>
 <div class="container">

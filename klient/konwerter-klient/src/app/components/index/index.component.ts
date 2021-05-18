@@ -13,10 +13,10 @@ export class IndexComponent implements OnInit, DoCheck {
 
   constructor(private apiService: ApiServiceService, private snackBar: MatSnackBar) { }
   formats: Format[] = [
-    {value: 'html-0', viewValue: 'HTML'},
-    {value: 'md-1', viewValue: 'MD'},
-    {value: 'sql-3', viewValue: 'SQL'},
-    {value: 'csv-4', viewValue: 'CSV'}
+    {value: 'html-0', viewValue: 'HTML', disabled: false},
+    {value: 'md-1', viewValue: 'MD', disabled: false},
+    {value: 'sql-3', viewValue: 'SQL', disabled: false},
+    {value: 'csv-4', viewValue: 'CSV', disabled: false}
   ];
   fileInfos?: Observable<any>;
   convertButton = false;
@@ -28,6 +28,8 @@ export class IndexComponent implements OnInit, DoCheck {
   receivedFile;
   isReceiving = true;
   isGetting = false;
+  fileTypeTemp;
+  errorMessage = false;
 
   ngOnInit(): void {
     this.fileInfos = this.apiService.getFiles();
@@ -41,92 +43,112 @@ export class IndexComponent implements OnInit, DoCheck {
     this.convertButton = true;
   }
   public convertFile(): void {
+    this.errorMessage = false;
     if (this.selectedFormat === 'html-0') {
-      console.log('meee');
-      this.apiService.convertMDToHTML().subscribe(
-        res => {
-          // console.log(res);
-          this.blob = new Blob([res], {type: 'application/pdf'});
+      if (this.fileTypeTemp === 'text/html') {
+        this.errorMessage = true;
+      }
+      else {
+        this.apiService.convertMDToHTML().subscribe(
+          res => {
+            // console.log(res);
+            this.blob = new Blob([res], {type: 'application/pdf'});
 
-          const downloadURL = window.URL.createObjectURL(res);
-          const link = document.createElement('a');
-          link.href = downloadURL;
-          link.download = 'converted.html';
-          link.click();
-          // get data from blob
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.receivedFile = reader.result;
-          };
-          reader.readAsText(this.blob);
-        },
-        error => {
-          alert('error - get converted file');
-        }
-      );
+            const downloadURL = window.URL.createObjectURL(res);
+            const link = document.createElement('a');
+            link.href = downloadURL;
+            link.download = 'converted.html';
+            link.click();
+            // get data from blob
+            const reader = new FileReader();
+            reader.onload = () => {
+              this.receivedFile = reader.result;
+            };
+            reader.readAsText(this.blob);
+          },
+          error => {
+            alert('error - get converted file');
+          }
+        );
+      }
     }
     else if (this.selectedFormat === 'md-1') {
-      this.apiService.convertHTMLToMD().subscribe(
-        res => {
-          console.log(res);
-          this.blob = new Blob([res], {type: 'application/pdf'});
+      if (this.fileTypeTemp === 'text/html') {
+        this.apiService.convertHTMLToMD().subscribe(
+          res => {
+            console.log(res);
+            this.blob = new Blob([res], {type: 'application/pdf'});
 
-          const downloadURL = window.URL.createObjectURL(res);
-          const link = document.createElement('a');
-          link.href = downloadURL;
-          link.download = 'converted.md';
-          link.click();
-        },
-        error => {
-          alert('error - get converted file');
-        }
-      );
+            const downloadURL = window.URL.createObjectURL(res);
+            const link = document.createElement('a');
+            link.href = downloadURL;
+            link.download = 'converted.md';
+            link.click();
+          },
+          error => {
+            alert('error - get converted file');
+          }
+        );
+      }
+      else {
+        this.errorMessage = true;
+      }
     }
     else if (this.selectedFormat === 'sql-3') {
-      this.apiService.convertHTMLToSQL().subscribe(
-        res => {
-          console.log(res);
-          this.blob = new Blob([res], {type: 'application/pdf'});
+      if (this.fileTypeTemp === 'text/html') {
+        this.apiService.convertHTMLToSQL().subscribe(
+          res => {
+            console.log(res);
+            this.blob = new Blob([res], {type: 'application/pdf'});
 
-          const downloadURL = window.URL.createObjectURL(res);
-          const link = document.createElement('a');
-          link.href = downloadURL;
-          link.download = 'converted.sql';
-          link.click();
-          // get data from blob
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.receivedFile = reader.result;
-          };
-          reader.readAsText(this.blob);
-        },
-        error => {
-          alert('error - get converted file');
-        }
-      );
+            const downloadURL = window.URL.createObjectURL(res);
+            const link = document.createElement('a');
+            link.href = downloadURL;
+            link.download = 'converted.sql';
+            link.click();
+            // get data from blob
+            const reader = new FileReader();
+            reader.onload = () => {
+              this.receivedFile = reader.result;
+            };
+            reader.readAsText(this.blob);
+          },
+          error => {
+            alert('error - get converted file');
+          }
+        );
+      }
+      else {
+        this.errorMessage = true;
+      }
     }
     else if (this.selectedFormat === 'csv-4') {
-      this.apiService.convertHTMLToCSV().subscribe(
-        res => {
-          console.log(res);
-          this.blob = new Blob([res], {type: 'application/pdf'});
+      if (this.fileTypeTemp === 'text/html') {
+        this.apiService.convertHTMLToCSV().subscribe(
+          res => {
+            console.log(res);
+            this.blob = new Blob([res], {type: 'application/pdf'});
 
-          const downloadURL = window.URL.createObjectURL(res);
-          const link = document.createElement('a');
-          link.href = downloadURL;
-          link.download = 'converted.csv';
-          link.click();
-          // get data from blob
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.receivedFile = reader.result;
-          };
-          reader.readAsText(this.blob);
-        },
-        error => {
-          alert('error - get converted file');
-        }
-      );
+            const downloadURL = window.URL.createObjectURL(res);
+            const link = document.createElement('a');
+            link.href = downloadURL;
+            link.download = 'converted.csv';
+            link.click();
+            // get data from blob
+            const reader = new FileReader();
+            reader.onload = () => {
+              this.receivedFile = reader.result;
+            };
+            reader.readAsText(this.blob);
+          },
+          error => {
+            alert('error - get converted file');
+          }
+        );
+      }
+      else {
+        this.errorMessage = true;
+      }
     }
   }
 
@@ -135,8 +157,14 @@ export class IndexComponent implements OnInit, DoCheck {
       duration: 2000,
     });
   }
+
+  setFileFormat(fileType: string) {
+    this.fileTypeTemp = fileType;
+    console.log(this.fileTypeTemp);
+  }
 }
 interface Format {
   value: string;
   viewValue: string;
+  disabled: boolean;
 }

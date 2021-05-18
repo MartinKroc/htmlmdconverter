@@ -2,6 +2,8 @@ package com.converter.serwer.services;
 
 import com.converter.serwer.dtos.AddFileDto;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -103,7 +105,66 @@ public class ConverterServiceImpl implements ConverterService {
             System.out.println(e.getMessage());
         }
         //parse
-        System.out.print(doc);
+        StringBuilder content = new StringBuilder();
+        String tempTag = "";
+        //System.out.print(doc);
+
+        Elements elements = doc.body().select("*");
+        for(Element element : elements) {
+            System.out.print(element.tagName());
+            tempTag = element.tagName();
+            switch (tempTag) {
+                case "h1" :
+                    content.append("# ").append(element.ownText()).append("\n");
+                    break;
+                case "h3" :
+                    content.append("### ").append(element.ownText()).append("\n");
+                    break;
+                case "p" :
+                    content.append(element.ownText()).append("\n");
+                    break;
+                case "br" :
+                    content.append("\n");
+                    break;
+                case "strong" :
+                    content.append("**").append(element.ownText()).append("**").append("\n");
+                    break;
+                case "em" :
+                    content.append("*").append(element.ownText()).append("*").append("\n");
+                    break;
+                case "blockquote" :
+                    content.append("> ").append(element.ownText()).append("\n");
+                    break;
+                case "ol" :
+                    for(int i=1; i<=element.childrenSize(); i++) {
+                        content.append(i).append(" ").append(element.child(i-1).ownText()).append("\n");
+                    }
+                    break;
+                case "ul" :
+                    for(int i=1; i<=element.childrenSize(); i++) {
+                        content.append("- ").append(element.child(i-1).ownText()).append("\n");
+                    }
+                    break;
+                case "img" :
+                    Attributes a = element.attributes();
+                    String link = a.get("src");
+                    content.append("![image](").append(link).append(")\n");
+                    break;
+                case "a" :
+                    Attributes aa = element.attributes();
+                    String linka = aa.get("href");
+                    content.append("[").append(element.ownText()).append("](").append(linka).append(")\n");
+                    break;
+                case "code" :
+                    content.append("    ").append(element.ownText()).append("\n");
+                    break;
+                case "li" :
+                    break;
+                default:
+                    content.append(element.ownText()).append("\n");
+            }
+        }
+
         //create new result file
         FileWriter fileWriter = null;
         InputStreamResource resource = null;
@@ -117,7 +178,7 @@ public class ConverterServiceImpl implements ConverterService {
                 System.out.println("File already exists.");
             }
             fileWriter = new FileWriter(myObj);
-            fileWriter.append(doc.toString());
+            fileWriter.append(content);
             fis = new FileInputStream(myObj);
             resource = new InputStreamResource(fis);
 
