@@ -1,28 +1,19 @@
 package com.converter.serwer.controllers;
 
-import com.converter.serwer.dtos.AddFileDto;
 import com.converter.serwer.dtos.FileInfo;
 import com.converter.serwer.services.ConverterService;
+import com.converter.serwer.services.FilesService;
 import com.converter.serwer.services.HtmlCsvService;
 import com.converter.serwer.services.HtmlSqlService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import org.springframework.core.io.Resource;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.apache.commons.io.IOUtils;
 
 @RestController
 @CrossOrigin
@@ -33,49 +24,32 @@ public class ConverterController {
     private final ConverterService converterService;
     private final HtmlSqlService htmlSqlService;
     private final HtmlCsvService htmlCsvService;
+    private final FilesService filesService;
 
-    @PostMapping("/upload")
+    // FILE MANAGEMENT ENDPOINTS
+
+    @PostMapping("/files/upload")
     public String addFile(@RequestParam("file")MultipartFile file) {
-        String m = "";
         try {
-            converterService.saveFile(file);
-            m = "Plik dodany pomyslnie: " + file.getOriginalFilename();
-            return "Ok";
+            filesService.saveFile(file);
+            return "upload successful";
         } catch (Exception ex) {
-            return "Not ok";
+            return "error";
         }
     }
 
-    @GetMapping("/files")
+    @GetMapping("/files/list")
     public ResponseEntity<List<FileInfo>> getListFiles() {
-        List<FileInfo> fileInfos = converterService.loadAll().map(path -> {
-            String filename = path.getFileName().toString();
-            String url = MvcUriComponentsBuilder
-                    .fromMethodName(ConverterController.class, "getFile", path.getFileName().toString()).build().toString();
-
-            return new FileInfo(filename, url);
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
+        return filesService.getListFiles();
     }
 
-    @GetMapping("/files/{filename:.+}")
+    @GetMapping("/files/list/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource file = converterService.loadFile(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        return filesService.getFile(filename);
     }
 
-    @GetMapping(value = "/conv")
-    public ResponseEntity<InputStreamResource> convertHtmlMd() throws IOException {
-        File file = new File("uploaddir/test.html");
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-        return ResponseEntity.ok()
-                .contentLength(file.length())
-                .contentType(MediaType.parseMediaType("text/html"))
-                .body(resource);
-    }
+    // CONVERSION ENDPOINTS
 
     @GetMapping(value = "/conv/md")
     public ResponseEntity<InputStreamResource> convertMdToHtml() throws IOException {
@@ -83,13 +57,8 @@ public class ConverterController {
     }
 
     @GetMapping(value = "/conv/html")
-    public ResponseEntity<InputStreamResource> convert() throws IOException {
+    public ResponseEntity<InputStreamResource> convertHtmlToMD() throws IOException {
         return converterService.convertHtmlToMd();
-    }
-
-    @GetMapping(value = "/conv/xml")
-    public ResponseEntity<InputStreamResource> convertMdTOXml() throws IOException {
-        return converterService.convertMDToXml();
     }
 
     @GetMapping(value = "/conv/sql")

@@ -19,8 +19,7 @@ import java.util.List;
 @Service
 public class HtmlCsvServiceImpl implements HtmlCsvService {
 
-    @Override
-    public ResponseEntity<InputStreamResource> convert() throws IOException {
+    public Document deleteOldFiles() {
         Document doc = null;
         //delete old files
         try {
@@ -39,10 +38,15 @@ public class HtmlCsvServiceImpl implements HtmlCsvService {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        //parse
-        //System.out.print(doc);
-        //convert
+        return doc;
+    }
 
+    @Override
+    public ResponseEntity<InputStreamResource> convert() throws IOException {
+
+        Document doc = deleteOldFiles();
+
+        //convert
         StringBuilder content = new StringBuilder();
         Elements tables = doc.getElementsByTag("table");
         Elements trs = doc.getElementsByTag("tr");

@@ -13,7 +13,7 @@ export class ApiServiceService {
     const formData: FormData = new FormData();
     formData.append('file', file);
 
-    const req = new HttpRequest('POST', `${this.baseUrl}/convert/upload`, formData, {
+    const req = new HttpRequest('POST', `${this.baseUrl}/convert/files/upload`, formData, {
       reportProgress: true,
       responseType: 'json'
     });
@@ -22,7 +22,7 @@ export class ApiServiceService {
   }
 
   getFiles(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/convert/files`);
+    return this.http.get(`${this.baseUrl}/convert/files/list`);
   }
 
   convertHTMLToMD(): Observable<any> {

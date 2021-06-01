@@ -1,5 +1,6 @@
 package com.converter.serwer.services;
 
+import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,30 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class HtmlSqlServiceImpl implements HtmlSqlService {
+
+    private final HtmlCsvServiceImpl htmlCsvService;
 
     @Override
     public ResponseEntity<InputStreamResource> convert() throws IOException {
-        Document doc = null;
-        //delete old files
-        try {
-            File file = new File("uploaddir/test.html");
-            doc = Jsoup.parse(file, "UTF-8");
-            File fileUp = new File("src/main/resources/convertedfiles/result.md");
-
-            if(fileUp.delete())
-            {
-                System.out.println("File deleted successfully");
-            }
-            else
-            {
-                System.out.println("Failed to delete the file");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        //parse
-        //System.out.print(doc);
+        Document doc = htmlCsvService.deleteOldFiles();
         //convert
 
         StringBuilder content = new StringBuilder();
@@ -71,8 +56,7 @@ public class HtmlSqlServiceImpl implements HtmlSqlService {
                     }
                     else {
                         //INSERTS
-                        //tempRow = "INSERT INTO test_table VALUES(" + tr.child(0).text() + ", " + tr.child(1).text() + ");\n";
-                        content.append("INSERT INTO test_table VALUES(");
+                        content.append("INSERT INTO test_table").append(tableNr).append(" VALUES(");
                         for(int i=0; i< tr.childrenSize(); i++) {
                             content.append(tr.child(i).text());
                             if(!(i == tr.childrenSize()-1))  content.append(", ");
@@ -84,7 +68,6 @@ public class HtmlSqlServiceImpl implements HtmlSqlService {
                 tableNr++;
             }
         }
-        System.out.print(content);
 
         //create new result file
         FileWriter fileWriter = null;
