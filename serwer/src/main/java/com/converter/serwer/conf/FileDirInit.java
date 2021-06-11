@@ -17,5 +17,6 @@ public class FileDirInit implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         filesService.deleteFile();
         filesService.fileInit();
+        filesService.historyFilesInit();
     }
 }

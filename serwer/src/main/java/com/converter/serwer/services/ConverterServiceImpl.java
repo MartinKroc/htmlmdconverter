@@ -1,5 +1,6 @@
 package com.converter.serwer.services;
 
+import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
@@ -20,7 +21,10 @@ import java.io.*;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ConverterServiceImpl implements ConverterService {
+
+    private final FilesService filesService;
 
     @Override
     public ResponseEntity<InputStreamResource> convertHtmlToMd() throws IOException {
@@ -127,7 +131,7 @@ public class ConverterServiceImpl implements ConverterService {
                 fileWriter.close();
             }
         }
-
+        filesService.pushFileToHistory(myObj);
         return ResponseEntity.ok()
                 .contentLength(myObj.length())
                 .contentType(MediaType.parseMediaType("text/html"))

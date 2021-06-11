@@ -25,6 +25,10 @@ export class ApiServiceService {
     return this.http.get(`${this.baseUrl}/convert/files/list`);
   }
 
+  getHistory(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/convert/history/list`);
+  }
+
   convertHTMLToMD(): Observable<any> {
     return this.http.get(`${this.baseUrl}/convert/conv/html`, {responseType: 'blob' as 'json'});
   }

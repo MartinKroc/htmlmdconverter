@@ -1,6 +1,7 @@
 package com.converter.serwer.controllers;
 
 import com.converter.serwer.dtos.FileInfo;
+import com.converter.serwer.dtos.resp.FilesHistoryDto;
 import com.converter.serwer.services.ConverterService;
 import com.converter.serwer.services.FilesService;
 import com.converter.serwer.services.HtmlCsvService;
@@ -47,6 +48,11 @@ public class ConverterController {
     @ResponseBody
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         return filesService.getFile(filename);
+    }
+
+    @GetMapping("/history/list")
+    public ResponseEntity<List<FilesHistoryDto>> getHistory() {
+        return filesService.getFilesFromHistory();
     }
 
     // CONVERSION ENDPOINTS
