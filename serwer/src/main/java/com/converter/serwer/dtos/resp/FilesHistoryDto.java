@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -12,4 +14,5 @@ import lombok.Setter;
 public class FilesHistoryDto {
     private String name;
     private String size;
+    private String dateOfConversion;
 }

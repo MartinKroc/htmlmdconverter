@@ -4,10 +4,12 @@
 <div class="container files">
   <mat-card>
     <mat-selection-list #shoes [multiple]="false">
-      <h2>Załadowane pliki</h2>
+      <h2>Załadowane pliki <button mat-raised-button (click)="refreshFiles()">Odśwież</button></h2>
       <mat-list-option *ngFor="let file of fileInfos | async" value="file.name">
         {{file.name}}
       </mat-list-option>
+      <br/>
+      <button mat-raised-button (click)="dFiles()">Usuń załadowane pliki</button>
       <hr>
       <mat-form-field appearance="fill">
         <mat-label>Wybierz format</mat-label>
@@ -29,6 +31,6 @@
 <!--  <app-received-file class="results" [htitle]='u' [resT]="receivedFile" [iR]="isGetting"></app-received-file>-->
   <app-received-file class="results" [htitle]="r" [resT]="receivedFile" [iR]="isReceiving"></app-received-file>
 </div>
-<div class="container">
+<!--<div class="container">
   <app-history-list class="results"></app-history-list>
-</div>
+</div>-->

@@ -1,7 +1,6 @@
 package com.converter.serwer.services;
 
 import lombok.AllArgsConstructor;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -22,7 +21,7 @@ import java.util.List;
 public class HtmlSqlServiceImpl implements HtmlSqlService {
 
     private final HtmlCsvServiceImpl htmlCsvService;
-
+    private final FilesService filesService;
     @Override
     public ResponseEntity<InputStreamResource> convert() throws IOException {
         Document doc = htmlCsvService.deleteOldFiles();
@@ -94,7 +93,7 @@ public class HtmlSqlServiceImpl implements HtmlSqlService {
                 fileWriter.close();
             }
         }
-
+        filesService.pushFileToHistory(myObj, "sql");
         return ResponseEntity.ok()
                 .contentLength(myObj.length())
                 .contentType(MediaType.parseMediaType("text/html"))

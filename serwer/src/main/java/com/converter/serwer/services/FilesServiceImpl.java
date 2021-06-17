@@ -3,10 +3,12 @@ package com.converter.serwer.services;
 import com.converter.serwer.controllers.ConverterController;
 import com.converter.serwer.dtos.FileInfo;
 import com.converter.serwer.dtos.resp.FilesHistoryDto;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
@@ -19,7 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,10 +55,19 @@ public class FilesServiceImpl implements FilesService {
 
     @Override
     public void saveFile(MultipartFile multipartFile) {
-        try {
-            Files.copy(multipartFile.getInputStream(), this.root.resolve(multipartFile.getOriginalFilename()));
-        } catch (Exception ex) {
-            throw new RuntimeException("Blad przy zapisie pliku: " + ex.getMessage());
+        if(multipartFile.getContentType().equals("text/html")) {
+            try {
+                Files.copy(multipartFile.getInputStream(), this.root.resolve("test.html"), StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception ex) {
+                throw new RuntimeException("Blad przy zapisie pliku: " + ex.getMessage());
+            }
+        }
+        else {
+            try {
+                Files.copy(multipartFile.getInputStream(), this.root.resolve("test.md"), StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception ex) {
+                throw new RuntimeException("Blad przy zapisie pliku: " + ex.getMessage());
+            }
         }
     }
 
@@ -77,6 +91,22 @@ public class FilesServiceImpl implements FilesService {
     public void deleteFile() {
         FileSystemUtils.deleteRecursively(root.toFile());
         FileSystemUtils.deleteRecursively(historyRoot.toFile());
+    }
+
+    @Override
+    public String deleteUpFiles() {
+        List<FilesHistoryDto> fh = new ArrayList<FilesHistoryDto>();
+        String date;
+        File dir = new File(root.toUri());
+        File[] list = dir.listFiles();
+        for (int i = 0; i < list.length; i++) {
+            if (list[i].isFile()) {
+                list[i].delete();
+            } else if (list[i].isDirectory()) {
+                System.out.println("Directory " + list[i].getName());
+            }
+        }
+        return "Ok";
     }
 
     public Stream<Path> loadAll() {
@@ -107,11 +137,28 @@ public class FilesServiceImpl implements FilesService {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
-    public void pushFileToHistory(File file) throws IOException {
+    public void pushFileToHistory(File file, String fileType) throws IOException {
         String path = "history/";
         InputStream is = null;
         OutputStream os = null;
-        File toSave = new File(path + "converted" + tempFileNum + ".md");
+        File toSave;
+        switch (fileType) {
+            case "html":
+                toSave = new File(path + "converted" + tempFileNum + ".html");
+                break;
+            case "md" :
+                toSave = new File(path + "converted" + tempFileNum + ".md");
+                break;
+            case "sql" :
+                toSave = new File(path + "converted" + tempFileNum + ".sql");
+                break;
+            case "csv" :
+                toSave = new File(path + "converted" + tempFileNum + ".csv");
+                break;
+            default: {
+                toSave = new File(path + "converted" + tempFileNum + ".txt");
+            }
+        }
         try {
             is = new FileInputStream(file);
             os = new FileOutputStream(toSave);
@@ -127,19 +174,48 @@ public class FilesServiceImpl implements FilesService {
         tempFileNum++;
     }
 
+    @Override
+    public ResponseEntity<InputStreamResource> downloadFromHistory(String filename) {
+        InputStreamResource resource = null;
+        FileInputStream fis = null;
+        File myObj = null;
+        try {
+            myObj = new File("history/" + filename);
+            fis = new FileInputStream(myObj);
+            resource = new InputStreamResource(fis);
+
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok()
+                .contentLength(myObj.length())
+                .contentType(MediaType.parseMediaType("text/html"))
+                .body(resource);
+    }
+
     public ResponseEntity<List<FilesHistoryDto>> getFilesFromHistory() {
         List<FilesHistoryDto> fh = new ArrayList<FilesHistoryDto>();
+        String date;
         File dir = new File(historyRoot.toUri());
         File[] list = dir.listFiles();
         System.out.println("path " + dir.getName());
         for (int i = 0; i < list.length; i++) {
             if (list[i].isFile()) {
                 System.out.println("File " + list[i].getName());
-                fh.add(FilesHistoryDto.builder().size(String.valueOf(list[i].length())).name(list[i].getName()).build());
+                date = convertTime(list[i].lastModified());
+                fh.add(FilesHistoryDto.builder().size(String.valueOf(list[i].length())).name(list[i].getName()).dateOfConversion(date).build());
             } else if (list[i].isDirectory()) {
                 System.out.println("Directory " + list[i].getName());
             }
         }
         return ResponseEntity.ok(fh);
+    }
+
+    public String convertTime(long time){
+        Date date = new Date(time);
+        Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+        return format.format(date);
     }
 }

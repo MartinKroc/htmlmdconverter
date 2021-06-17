@@ -1,4 +1,4 @@
-import {Component, DoCheck, OnInit} from '@angular/core';
+import {AfterViewInit, Component, DoCheck, ElementRef, HostListener, OnInit} from '@angular/core';
 import {ApiServiceService} from '../../shared/api-service.service';
 import {Observable} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -8,10 +8,10 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.css']
 })
-export class IndexComponent implements OnInit, DoCheck {
+export class IndexComponent implements OnInit, DoCheck, AfterViewInit {
   private blob: Blob;
-
-  constructor(private apiService: ApiServiceService, private snackBar: MatSnackBar) { }
+  constructor(private apiService: ApiServiceService, private snackBar: MatSnackBar) {
+  }
   formats: Format[] = [
     {value: 'html-0', viewValue: 'HTML', disabled: false},
     {value: 'md-1', viewValue: 'MD', disabled: false},
@@ -37,6 +37,25 @@ export class IndexComponent implements OnInit, DoCheck {
 
   ngDoCheck(): void {
 
+  }
+
+  ngAfterViewInit() {
+
+  }
+
+  refreshFiles() {
+    this.fileInfos = this.apiService.getFiles();
+  }
+
+  dFiles() {
+    this.apiService.delFiles().subscribe(
+      res => {
+        console.log('success');
+      },
+      error => {
+        console.log('error');
+      }
+    );
   }
 
   convert() {

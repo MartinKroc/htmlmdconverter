@@ -44,16 +44,27 @@ public class ConverterServiceImpl implements ConverterService {
             {
                 System.out.println("Failed to delete the file");
             }
+            if(file.exists()) {
+                if(file.delete())
+                {
+                    System.out.println("File uploaded deleted successfully");
+                }
+                else
+                {
+                    System.out.println("Failed to delete the uploaded file");
+                }
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
         //parse
         StringBuilder content = new StringBuilder();
         String tempTag = "";
 
         Elements elements = doc.body().select("*");
         for(Element element : elements) {
-            System.out.print(element.tagName());
+            //System.out.print(element.tagName());
             tempTag = element.tagName();
             switch (tempTag) {
                 case "h1" :
@@ -131,7 +142,7 @@ public class ConverterServiceImpl implements ConverterService {
                 fileWriter.close();
             }
         }
-        filesService.pushFileToHistory(myObj);
+        filesService.pushFileToHistory(myObj, "md");
         return ResponseEntity.ok()
                 .contentLength(myObj.length())
                 .contentType(MediaType.parseMediaType("text/html"))
@@ -152,7 +163,7 @@ public class ConverterServiceImpl implements ConverterService {
         String temp1;
         String temp2;
         for (Node node : nodes) {
-            System.out.print(node);
+            //System.out.print(node);
             if (node instanceof HeaderNode) {
                 HeaderNode headerNode = (HeaderNode) node;
                 temp1 = "<h" + headerNode.getLevel() + ">";
@@ -251,7 +262,7 @@ public class ConverterServiceImpl implements ConverterService {
 
 
         }
-        System.out.print(content);
+        //System.out.print(content);
         //delete file if exist
         File myObj = null;
         File file = new File("src/main/resources/convertedfiles/result.html");
@@ -300,7 +311,7 @@ public class ConverterServiceImpl implements ConverterService {
                 fileWriter.close();
             }
         }
-
+        filesService.pushFileToHistory(myObj, "html");
         return ResponseEntity.ok()
                 .contentLength(myObj.length())
                 .contentType(MediaType.parseMediaType("text/html"))
@@ -332,20 +343,20 @@ public class ConverterServiceImpl implements ConverterService {
         else if (node instanceof ParaNode) {
             ParaNode paraNode = (ParaNode) node;
             Node firstChildNode = paraNode.getChildren().get(0);
-            System.out.println("first child node " + firstChildNode);
+            //System.out.println("first child node " + firstChildNode);
             if (firstChildNode instanceof SuperNode) {
                 Node sChild = firstChildNode.getChildren().get(0);
-                System.out.println("sChild node " + sChild);
+                //System.out.println("sChild node " + sChild);
                 String li = "link";
                 if(sChild instanceof ExpLinkNode) {
                     ExpLinkNode eln = (ExpLinkNode) firstChildNode.getChildren().get(0);
-                    System.out.println(eln.url);
+                    //System.out.println(eln.url);
                     String appendL = li + "<a " + "href=\"" + eln.url + "\">" + li + "</a>" + eln.title;
                     return appendL;
                 }
                 else if(sChild instanceof ExpImageNode) {
                     ExpImageNode ein = (ExpImageNode)firstChildNode.getChildren().get(0);
-                    System.out.println("zdjecie" + ein.getChildren().get(0));
+                    //System.out.println("zdjecie" + ein.getChildren().get(0));
                     String appendImg = "<img " + "src=\"" + ein.url + "\">" + "</img>";
                     return appendImg;
                 }

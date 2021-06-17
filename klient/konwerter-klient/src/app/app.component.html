@@ -1,6 +1,9 @@
 <p>
   <mat-toolbar color="accent">
-    <span>Konwerter MD/HTML online</span>
+    <span><a routerLink="">Konwerter MD/HTML online</a></span>
+    <span class="example-spacer"></span>
+    <button mat-raised-button routerLink="/history">Historia plików</button>
   </mat-toolbar>
 </p>
-<app-index></app-index>
+<!--<app-index></app-index>-->
+<router-outlet></router-outlet>

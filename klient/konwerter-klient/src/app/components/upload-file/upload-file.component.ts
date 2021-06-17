@@ -35,7 +35,6 @@ export class UploadFileComponent implements OnInit {
 
       if (file.size < 10000000) {
         this.currentFile = file;
-        //console.log(this.currentFile.type);
         this.newItemEvent.emit(this.currentFile.type);
         this.apiService.uploadFile(this.currentFile).subscribe(
           (event: any) => {

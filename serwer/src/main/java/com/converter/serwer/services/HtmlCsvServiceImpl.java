@@ -1,5 +1,6 @@
 package com.converter.serwer.services;
 
+import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,7 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class HtmlCsvServiceImpl implements HtmlCsvService {
+
+    private final FilesService filesService;
 
     public Document deleteOldFiles() {
         Document doc = null;
@@ -34,6 +38,16 @@ public class HtmlCsvServiceImpl implements HtmlCsvService {
             else
             {
                 System.out.println("Failed to delete the file");
+            }
+            if(file.exists()) {
+                if(file.delete())
+                {
+                    System.out.println("File uploaded deleted successfully");
+                }
+                else
+                {
+                    System.out.println("Failed to delete the uploaded file");
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -82,7 +96,7 @@ public class HtmlCsvServiceImpl implements HtmlCsvService {
                 tableNr++;
             }
         }
-        System.out.print(content);
+        //System.out.print(content);
 
         //create new result file
         FileWriter fileWriter = null;
@@ -109,7 +123,7 @@ public class HtmlCsvServiceImpl implements HtmlCsvService {
                 fileWriter.close();
             }
         }
-
+        filesService.pushFileToHistory(myObj, "csv");
         return ResponseEntity.ok()
                 .contentLength(myObj.length())
                 .contentType(MediaType.parseMediaType("text/html"))

@@ -55,6 +55,16 @@ public class ConverterController {
         return filesService.getFilesFromHistory();
     }
 
+    @GetMapping("history/list/{name}")
+    public ResponseEntity<InputStreamResource> downloadFileFromHistory(@PathVariable("name")String filename) {
+        return filesService.downloadFromHistory(filename);
+    }
+
+    @GetMapping("/files/delete")
+    public String delFiles() {
+        return filesService.deleteUpFiles();
+    }
+
     // CONVERSION ENDPOINTS
 
     @GetMapping(value = "/conv/md")
